@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script language="javascript" type="text/javascript" src="libraries/p5.js"></script>
+  <script language="javascript" src="libraries/p5.sound.js"></script>
+  <script language="javascript" type="text/javascript" src="game.js"></script>
+  <script language="javascript" type="text/javascript" src="player.js"></script>
+  <script language="javascript" type="text/javascript" src="pipe.js"></script>  
+  <script language="javascript" type="text/javascript" src="NEAT.js"></script> 
+  <script language="javascript" type="text/javascript" src="neural.js"></script>   
+  <title>Flappy Bird Game</title>
+  <style>
+    /* CSS to center the canvas */
+    body, html {
+      height: 100%;
+      margin: 0;
+      background-color: lightgreen;
+    }
+    #canvas {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    #buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .switchModeButton {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      font-weight: bold;
+      color: #FFFFFF;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 5px #999;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+      outline: none;
+    }
+    .switchModeButton:hover {
+      background-color: #45A049;
+    }
+    .switchModeButton:active {
+      background-color: #45A049;
+      box-shadow: 0 5px #666;
+      transform: translateY(4px);
+    }
+  </style>
+</head>
+<body>
+  <div id="buttons">
+    <button class="switchModeButton" onClick="switchMode()">Switch Game Mode</button>
+    <button class="switchModeButton" onClick="switchDebugMode()">Switch Debug Mode</button>
+    <button class="switchModeButton" onClick="toggleMute()">Toggle Background Music</button>
+  </div>
+  <div id="canvas"></div>
+</body>
+</html>
