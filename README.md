@@ -49,6 +49,6 @@ Welcome to the NEAT implementation of the Flappy Bird game! This game uses the N
 
 - Implementing different difficulty levels.
 - Adding in a start screen.
-- Addig comsetic skins to choose from.
+- Make frame independent to be able to adjust speed
 
 Hope you enjoy playing and watching the evolution of agents in Flappy Bird!
