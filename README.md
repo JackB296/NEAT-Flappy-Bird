@@ -1,54 +1,83 @@
-# Flappy Bird NEAT Game README
+<div align="center">
 
-Welcome to the NEAT implementation of the Flappy Bird game! This game uses the NeuroEvolution of Augmenting Topologies (NEAT) algorithm to train agents to play the game by evolving neural network architectures.
+# Neuroevolution Flappy Bird
 
-## Game Overview:
+A population of small neural networks that teach themselves to play Flappy Bird. There is no training data and no labels. Each generation the best flyers survive, breed, and mutate, and the flock gets better on its own.
 
-- This game allows you to play Flappy Bird as a user or watch a population of agents play and learn the game through the NEAT algorithm.
-- The game keeps track of the distance traveled by the bird, and each bird tries to avoid the pipes and reach the maximum possible distance.
-- The game supports a debug mode to visualize how the NEAT agents make decisions.
+Built from scratch in vanilla JavaScript with [p5.js](https://p5js.org/).
 
-## Game Variables:
+<img src="docs/training.gif" alt="AI mode with the debug overlay on: each agent's hitbox in red, its decision line to the next gap in green, and the generation counter climbing as the flock improves." width="300" />
 
-- **Debug Mode:** Visualize agent decisions.
-- **Neat Mode:** Switch between user playing mode and NEAT playing mode.
-- **High Counter:** Tracks the highest score achieved.
-- **Bird, Background, Pipes and Ground:** Various game assets to visually represent the game.
+**[Play it live](https://jbialecki.com/flappy)** · Press Space to fly it yourself, or hand the controls to the AI.
 
-## NEAT Variables:
+</div>
 
-- **Population Size:** Number of agents in the NEAT population.
-- **Mutation Rate:** Probability of mutations.
-- **Crossover Rate:** Probability of crossovers.
-- **Stagnation Threshold:** Number of generations without improvement before stopping.
-  
-## Music Variables:
+## What it does
 
-- Background music, jump sound, and game over sound are integrated to enhance the gaming experience.
+Two modes on one page:
 
-## Key Functions:
+- **Play it yourself.** Space flaps. Miss a pipe and it is game over.
+- **Watch it learn.** Fifty agents fly at once. When the last one crashes, the population breeds a new generation and tries again. A debug overlay shows what each network sees and the decision it makes.
 
-1. **setup()**: Initializes the game by setting up the canvas, preloading assets and setting the game's frame rate.
-2. **preload()**: Loads image and sound files.
-3. **draw()**: Main game loop function responsible for drawing and updating game elements.
-4. **updateBirds()**: Update birds' positions and checks for collisions.
-5. **updatePipes()**: Manages spawning and updating pipes.
-6. **keyPressed()**: Handles user input for jumping.
-7. **switchMode()**: Toggle between neat mode and user mode.
-8. **toggleMute()**: Mutes or plays the background music.
+## How the learning works
 
-## Usage:
+Each agent is a small feed-forward network with two inputs and one output.
 
-1. Run the game.
-2. Play as a user or switch to NEAT mode to watch the agents play.
-3. Use the space key to make the bird jump when playing as a user.
-4. Toggle debug mode to visualize the decision-making process of the NEAT agents.
-5. Enjoy the game!
+The inputs, both scaled to a 0-1 range:
+- the bird's height on the screen
+- the vertical center of the next pipe gap
 
-## Future Enhancements:
+The output is a single number squashed through a sigmoid. Above 0.5, the bird flaps.
 
-- Implementing different difficulty levels.
-- Adding in a start screen.
-- Make frame independent to be able to adjust speed
+There is no backpropagation and no dataset. The networks improve through a genetic algorithm that runs every time the whole population dies:
 
-Hope you enjoy playing and watching the evolution of agents in Flappy Bird!
+1. **Score.** Each bird is rated on how far it flew, minus a small penalty for drifting away from the center of the gap.
+2. **Select.** Parents are chosen by tournament selection (the best of five random agents), and the single fittest network survives untouched into the next generation (elitism).
+3. **Breed and mutate.** Parent weights are mixed by crossover and then nudged at random by mutation to fill out the rest of the population.
+4. **Speciate.** Networks with similar weights are grouped into species, and any species that goes ten generations without improving is dropped. This stops one early winner from swamping the whole gene pool.
+
+Speciation and stagnation are borrowed from NEAT. Weights start from a Xavier-style initialization, and the whole loop runs live at 60 fps in the browser.
+
+## Controls
+
+| Action | Control |
+| --- | --- |
+| Flap (when playing yourself) | Space |
+| Switch between playing and watching the AI | Switch Game Mode |
+| Toggle the debug overlay (hitboxes, decision lines) | Switch Debug Mode |
+| Mute or unmute the music | Toggle Background Music |
+
+## Run it locally
+
+No build step and nothing to install. Clone the repo and serve the folder over http, since the browser blocks loading images and audio from `file://`:
+
+```bash
+git clone https://github.com/JackB296/neuroevolution-flappy-bird.git
+cd neuroevolution-flappy-bird
+python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000`.
+
+## Project layout
+
+```
+index.html   canvas and control buttons
+game.js      game loop, rendering, mode switching, fitness scoring
+NEAT.js      the population: selection, speciation, generational turnover
+neural.js    the network: predict, crossover, mutate
+player.js    the bird: physics and collision
+pipe.js      the pipes: spawning and collision
+```
+
+## What I would build next
+
+- Frame-rate independent physics, so game speed can be tuned without changing difficulty
+- A start screen, plus saving and reloading the best network
+- Real topology evolution, growing hidden nodes and new connections, which is the piece that would make this NEAT in full
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+Built by Jack Bialecki.

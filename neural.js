@@ -6,25 +6,13 @@ class NeuralNetwork {
     this.xavierInitialization();
   }
 
-  initializeWeights() {
-    for (let i = 0; i < this.outputSize; i++) {
-      const weights = [];
-
-      for (let j = 0; j < this.inputSize + 1; j++) {
-        // add 1 to inputSize for the bias weight
-        weights.push(Math.random() * 2 - 1);
-      }
-      
-      this.weights.push(weights);
-    }
-  }
-
   xavierInitialization() {
     const variance = 2 / (this.inputSize + this.outputSize);
     const standardDeviation = Math.sqrt(variance);
 
+    // last column of each row is the bias weight; center the range on 0
     this.weights = Array.from({ length: this.outputSize }, () =>
-      Array.from({ length: this.inputSize + 1 }, () => Math.random() * standardDeviation)
+      Array.from({ length: this.inputSize + 1 }, () => (Math.random() * 2 - 1) * standardDeviation)
     );
   }
 
@@ -32,7 +20,7 @@ class NeuralNetwork {
     const outputs = [];
 
     for (let i = 0; i < this.outputSize; i++) {
-      let sum = 0;
+      let sum = this.weights[i][this.inputSize]; // bias
       for (let j = 0; j < this.inputSize; j++) {
         sum += inputs[j] * this.weights[i][j];
       }
@@ -51,7 +39,8 @@ class NeuralNetwork {
     const child = new NeuralNetwork(this.inputSize, this.outputSize);
 
     for (let i = 0; i < this.outputSize; i++) {
-      for (let j = 0; j < this.inputSize; j++) {
+      for (let j = 0; j < this.inputSize + 1; j++) {
+        // include the bias weight (last column)
         if (Math.random() < crossoverRate) {
           child.weights[i][j] = parent.weights[i][j];
         } else {
@@ -65,7 +54,8 @@ class NeuralNetwork {
   
   mutate(mutationRate) {
     for (let i = 0; i < this.outputSize; i++) {
-      for (let j = 0; j < this.inputSize; j++) {
+      for (let j = 0; j < this.inputSize + 1; j++) {
+        // include the bias weight (last column)
         if (Math.random() < mutationRate) {
           // randomly change the weight
           this.weights[i][j] += Math.random() * 2 - 1;
@@ -77,7 +67,7 @@ class NeuralNetwork {
   isCompatible(otherNetwork) {
     let distance = 0;
     for (let i = 0; i < this.outputSize; i++) {
-      for (let j = 0; j < this.inputSize; j++) {
+      for (let j = 0; j < this.inputSize + 1; j++) {
         const weightDiff = this.weights[i][j] - otherNetwork.weights[i][j];
         distance += weightDiff * weightDiff;
       }

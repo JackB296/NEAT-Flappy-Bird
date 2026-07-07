@@ -33,7 +33,8 @@ let gameOverSound;
 
 function setup() {
   setupCanvas();
-  preload();
+  // p5 runs the global preload() automatically before setup(), so assets are
+  // already loaded here; calling it again would fetch everything a second time.
   frameRate(60);
   initializeGame();
 }

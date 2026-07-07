@@ -88,7 +88,8 @@ class NEAT {
     this.population = [];
     for (let species of this.species) {
       for (let individual of species.individuals) {
-        individual.fitness /= species.length;
+        // fitness sharing: normalize by species size (was species.length, which is undefined)
+        individual.fitness /= species.individuals.length;
         this.population.push(individual);
       }
     }
